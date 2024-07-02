@@ -9,10 +9,14 @@ const VideoList = () => {
   useEffect(() => {
     const fetchVideos = async () => {
       const API_KEY = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
+      const searchQuery = 'fullstack project course';
       const response = await axios.get(
-        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=fullstack%20project&type=video&key=${API_KEY}`
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(searchQuery)}&type=video&key=${API_KEY}`
       );
-      setVideos(response.data.items);
+      const filteredVideos = response.data.items.filter(video =>
+        /coding|tutorial|project|build|step by step/.test(video.snippet.title.toLowerCase())
+      );
+      setVideos(filteredVideos);
     };
     fetchVideos();
   }, []);
@@ -23,10 +27,11 @@ const VideoList = () => {
         <div key={video.id.videoId}>
           <h3>{video.snippet.title}</h3>
           <iframe
-            width='560'
-            height='315'
+            width="560"
+            height="315"
             src={`https://www.youtube.com/embed/${video.id.videoId}`}
-            allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           ></iframe>
         </div>
